@@ -53,4 +53,4 @@ for epoch in range(1, NUM_EPOCHS + 1):
     print(f"Epoch: {epoch}\tTraining loss: {train_loss:.6f}")
 
 model.eval()
-torch.save(model.state_dict(), "models/mnist_convnet.pth")
+torch.save(model, "models/mnist_convnet.pt")
