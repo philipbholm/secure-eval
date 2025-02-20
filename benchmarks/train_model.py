@@ -3,7 +3,7 @@ import torchvision
 
 torch.manual_seed(1)
 BATCH_SIZE = 64
-NUM_EPOCHS = 20
+NUM_EPOCHS = 10
 LEARNING_RATE = 0.001
 
 train_data = torchvision.datasets.MNIST(
