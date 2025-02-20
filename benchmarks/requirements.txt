@@ -1,0 +1,5 @@
+crypten==0.4.1
+scikit-learn==1.6.1
+tenseal==0.3.13
+torch==2.6.0
+torchvision==0.21.0
