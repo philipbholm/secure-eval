@@ -54,3 +54,21 @@ for epoch in range(1, NUM_EPOCHS + 1):
 
 model.eval()
 torch.save(model, "models/mnist_convnet.pt")
+
+dummy_input = torch.randn(1, 1, 28, 28)
+torch.onnx.export(
+    model,
+    dummy_input,
+    "models/mnist_convnet.onnx",
+    export_params=True,
+    input_names=["input"],
+    output_names=["output"],
+    opset_version=20,
+    dynamic_axes={
+        "input": {0: "batch_size"},
+        "output": {0: "batch_size"},
+    },
+    keep_initializers_as_inputs=False,
+    dynamo=False,
+    external_data=False,
+)
