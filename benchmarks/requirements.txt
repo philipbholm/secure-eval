@@ -2,16 +2,16 @@
 wheel==0.45.1
 setuptools==75.3.0
 concrete-ml==1.8.0
-onnx==1.17.0
-onnxruntime==1.18.0
 crypten==0.4.1
-tenseal==0.3.13
+tenseal==0.3.16
 
 # ML packages
-scikit-learn==1.6.1
+onnx==0.17.0
+onnxruntime==0.18.0
+scikit-learn==1.4.0
 scipy==1.15.2
 tensorflow==2.18.0
-tf2onnx==1.16.1
-torch==2.6.0
-torchvision==0.21.0
-wfdb==4.2.0
+tf2onnx==1.8.4
+torch==2.3.1
+torchvision==0.18.1
+wfdb==4.1.2
