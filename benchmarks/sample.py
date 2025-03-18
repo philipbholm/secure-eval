@@ -27,7 +27,7 @@ ALICE = 0
 BOB = 1
 
 mnist = datasets.MNIST(
-    "/tmp", download=True, train=True, transform=transforms.ToTensor()
+    "/tmp", download=True, train=False, transform=transforms.ToTensor()
 )
 mean, std = (
     mnist.data.float().mean().unsqueeze(0),
@@ -36,13 +36,13 @@ mean, std = (
 mnist_norm = transforms.functional.normalize(mnist.data.float(), mean, std)
 mnist_labels = mnist.targets
 
-data = mnist_norm[:20]
-labels = mnist_labels[:20]
+data = mnist_norm[:200]
+labels = mnist_labels[:200]
 
-torch.save(data[:10], "/tmp/alice_train.pth")
-torch.save(data[10:], "/tmp/bob_test.pth")
-torch.save(labels[:10], "/tmp/alice_train_labels.pth")
-torch.save(labels[10:], "/tmp/bob_test_labels.pth")
+torch.save(data, "/tmp/alice_train.pth")
+torch.save(data, "/tmp/bob_test.pth")
+torch.save(labels, "/tmp/alice_train_labels.pth")
+torch.save(labels, "/tmp/bob_test_labels.pth")
 
 
 class AliceNet(nn.Module):
