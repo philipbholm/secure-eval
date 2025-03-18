@@ -29,14 +29,33 @@ class MLP(nn.Module):
         return x
 
 
+# Create and save the model before multiprocessing
+def save_model():
+    model = MLP()
+    torch.save(model, "models/mlp_local.pt")
+
+
+# Call this function to save the model
+save_model()
+
+
 @mpc.run_multiprocess(world_size=2)
 def run():
-    # Add MLP and Linear to safe globals to allow loading the model
+    # Load the model locally with safe_globals
     with safe_globals([MLP, Linear]):
-        model = crypten.load_from_party("models/mlp.pt", src=SERVER)
+        if crypten.communicator.get().get_rank() == SERVER:
+            model = torch.load("models/mlp_local.pt")
+        else:
+            model = None
 
     dummy_input = torch.empty((1, 12000))
-    private_model = crypten.nn.from_pytorch(model, dummy_input)
+
+    # Convert to CrypTen model
+    if crypten.communicator.get().get_rank() == SERVER:
+        private_model = crypten.nn.from_pytorch(model, dummy_input)
+    else:
+        private_model = crypten.nn.from_pytorch(dummy_input=dummy_input)
+
     private_model.encrypt(src=SERVER)
 
     # Load data from client
