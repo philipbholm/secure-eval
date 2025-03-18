@@ -47,4 +47,4 @@ def run():
     print(f"Output: {out}")
 
 
-# run()
+run()
