@@ -2,6 +2,7 @@
 
 - Create instance
     - Use ubuntu version with python version that works with old scikit-learn
+    - 24 GiB volume is too small, trying 100
 - Run the following commands
 
 ```bash
