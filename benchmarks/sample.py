@@ -17,6 +17,7 @@ from torch.nn.modules.linear import Linear
 from torch.serialization import safe_globals
 from torchvision import datasets, transforms
 
+warnings.filterwarnings("ignore", message="You are using `torch.load` with `weights_only=False`")
 warnings.filterwarnings("ignore", message="The given NumPy array is not writable")
 
 crypten.init()
