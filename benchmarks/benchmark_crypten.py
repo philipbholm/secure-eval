@@ -4,6 +4,7 @@ import crypten
 import crypten.mpc as mpc
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.nn.modules.linear import Linear
 from torch.serialization import safe_globals
 
@@ -29,9 +30,9 @@ class MLP(nn.Module):
 
     def forward(self, x):
         x = self.fc1(x)
-        x = torch.square(x)
+        x = F.relu(x)
         x = self.fc2(x)
-        x = torch.square(x)
+        x = F.relu(x)
         x = self.fc3(x)
         return x
 
