@@ -29,9 +29,9 @@ class MLP(nn.Module):
 
     def forward(self, x):
         x = self.fc1(x)
-        x = x * x
+        x = torch.square(x)
         x = self.fc2(x)
-        x = x * x
+        x = torch.square(x)
         x = self.fc3(x)
         return x
 
