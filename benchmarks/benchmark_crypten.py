@@ -1,6 +1,7 @@
 import crypten
 import crypten.mpc as mpc
 import torch
+import torch.nn as nn
 
 crypten.init()
 # Disables OpenMP threads -- needed by @mpc.run_multiprocess which uses fork
@@ -8,6 +9,22 @@ torch.set_num_threads(1)
 
 CLIENT = 0
 SERVER = 1
+
+
+class MLP(nn.Module):
+    def __init__(self):
+        super(MLP, self).__init__()
+        self.fc1 = nn.Linear(12000, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, 71)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = x * x
+        x = self.fc2(x)
+        x = x * x
+        x = self.fc3(x)
+        return x
 
 
 @mpc.run_multiprocess(world_size=2)
