@@ -2,6 +2,7 @@ import crypten
 import crypten.mpc as mpc
 import torch
 import torch.nn as nn
+from torch.serialization import safe_globals
 
 crypten.init()
 # Disables OpenMP threads -- needed by @mpc.run_multiprocess which uses fork
@@ -29,7 +30,10 @@ class MLP(nn.Module):
 
 @mpc.run_multiprocess(world_size=2)
 def run():
-    model = crypten.load_from_party("models/mlp.pt", src=SERVER)
+    # Add MLP to safe globals to allow loading the model
+    with safe_globals([MLP]):
+        model = crypten.load_from_party("models/mlp.pt", src=SERVER)
+
     dummy_input = torch.empty((1, 12000))
     private_model = crypten.nn.from_pytorch(model, dummy_input)
     private_model.encrypt(src=SERVER)
@@ -43,4 +47,4 @@ def run():
     print(f"Output: {out}")
 
 
-run()
+# run()
