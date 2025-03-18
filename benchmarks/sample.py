@@ -9,6 +9,8 @@ import crypten
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.serialization import safe_globals
+from torch.nn.modules.linear import Linear
 from torchvision import datasets, transforms
 
 crypten.init()
@@ -65,7 +67,8 @@ def compute_accuracy(output, labels):
 
 # Load pre-trained model to Alice
 dummy_model = AliceNet()
-plaintext_model = torch.load("models/tutorial4_alice_model.pth")
+with safe_globals([AliceNet, Linear]):
+    plaintext_model = torch.load("models/tutorial4_alice_model.pth")
 
 print(plaintext_model)
 
