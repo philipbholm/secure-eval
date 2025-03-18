@@ -1,9 +1,16 @@
+import warnings
+
 import crypten
 import crypten.mpc as mpc
 import torch
 import torch.nn as nn
 from torch.nn.modules.linear import Linear
 from torch.serialization import safe_globals
+
+warnings.filterwarnings(
+    "ignore", message="You are using `torch.load` with `weights_only=False`"
+)
+warnings.filterwarnings("ignore", message="The given NumPy array is not writable")
 
 crypten.init()
 # Disables OpenMP threads -- needed by @mpc.run_multiprocess which uses fork
@@ -28,39 +35,31 @@ class MLP(nn.Module):
         x = self.fc3(x)
         return x
 
-
-# Create and save the model before multiprocessing
-def save_model():
-    model = MLP()
-    torch.save(model, "models/mlp_local.pt")
+crypten.common.serial.register_safe_class(MLP)
 
 
-# Call this function to save the model
-save_model()
+model = MLP()
+torch.save(model, "models/mlp_local.pt")
 
 
 @mpc.run_multiprocess(world_size=2)
 def run():
-    # Load the model locally with safe_globals
-    with safe_globals([MLP, Linear]):
-        if crypten.communicator.get().get_rank() == SERVER:
-            model = torch.load("models/mlp_local.pt")
-        else:
-            model = None
-
+    dummy_model = MLP()
     dummy_input = torch.empty((1, 12000))
-
-    # Convert to CrypTen model
-    if crypten.communicator.get().get_rank() == SERVER:
-        private_model = crypten.nn.from_pytorch(model, dummy_input)
-    else:
-        private_model = crypten.nn.from_pytorch(dummy_input=dummy_input)
-
+    
+    # Encrypt model
+    with safe_globals([MLP, Linear]):
+        model_data = torch.load("models/mlp_local.pt", weights_only=False)
+        dummy_model.load_state_dict(model_data.state_dict())
+    private_model = crypten.nn.from_pytorch(dummy_model, dummy_input)
     private_model.encrypt(src=SERVER)
+    crypten.print(f"Model: {private_model}")
 
-    # Load data from client
-    data_enc = crypten.load_from_party("models/input.pth", src=CLIENT)
+    # Encrypt data
+    data = torch.load("models/input.pth")
+    data_enc = crypten.cryptensor(data, src=CLIENT)
 
+    # Encrypted inference
     private_model.eval()
     out_enc = private_model(data_enc)
     out = out_enc.get_plain_text()
