@@ -139,10 +139,12 @@ def encrypt_model_and_data():
     # Classify the encrypted data
     private_model.eval()
     output_enc = private_model(data_flatten)
+    print("Output tensor encrypted:", crypten.is_encrypted_tensor(output_enc))
 
     # Get plaintext output
     output = output_enc.get_plain_text()
-    print(output)
+    pred = output.argmax(dim=1)
+    print("Decrypted labels:\n", pred)
 
     # Both parties try to compute accuracy, but only Bob has the labels
     try:
