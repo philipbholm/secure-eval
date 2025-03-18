@@ -105,7 +105,7 @@ def encrypt_model_and_data():
 
     # Encrypt model from Alice
     dummy_input = torch.empty((1, 784))
-    private_model = crypten.nn.from_pytorch(model, dummy_input, skip_onnx=True, remove_batch_norm=True)
+    private_model = crypten.nn.from_pytorch(model, dummy_input)
     private_model.encrypt(src=ALICE)
 
     # Load data to Bob
