@@ -5,13 +5,17 @@
 # np.bool = builtins.bool
 # np.object = builtins.object
 
+import warnings
+
 import crypten
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.serialization import safe_globals
 from torch.nn.modules.linear import Linear
+from torch.serialization import safe_globals
 from torchvision import datasets, transforms
+
+warnings.filterwarnings("ignore", message="The given NumPy array is not writable")
 
 crypten.init()
 torch.set_num_threads(1)
