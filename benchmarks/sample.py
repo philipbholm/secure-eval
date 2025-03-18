@@ -105,34 +105,18 @@ def encrypt_model_and_data():
     dummy_model = AliceNet()
     dummy_input = torch.empty((1, 784))
 
-    # Load the model weights on Alice's side only
-    # This will be a no-op for Bob
-
+    # Encrypt model
     with safe_globals([AliceNet, Linear]):
         model_data = torch.load(
             "models/tutorial4_alice_model.pth", weights_only=False
         )
         dummy_model.load_state_dict(model_data.state_dict())
-
-
-    # Convert to CrypTen model
     private_model = crypten.nn.from_pytorch(dummy_model, dummy_input)
-
-    # Encrypt the model with Alice as the source
     private_model.encrypt(src=ALICE)
 
-    # Load test data - each party attempts to load their part
-    test_data = None
-    try:
-        test_data = torch.load("/tmp/bob_test.pth")
-    except:
-        # Alice doesn't have the test data, create dummy data
-        test_data = torch.zeros((count, 28, 28))
-
-    # Encrypt the test data with Bob as the source
+    # Encrypt data and flatten data
+    test_data = torch.load("/tmp/bob_test.pth")
     data_enc = crypten.cryptensor(test_data[:count], src=BOB)
-
-    # Flatten the encrypted data
     data_flatten = data_enc.flatten(start_dim=1)
 
     # Classify the encrypted data
