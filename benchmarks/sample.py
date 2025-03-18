@@ -100,7 +100,7 @@ count = 100  # For illustration purposes, we'll use only 100 samples for classif
 
 
 @mpc.run_multiprocess(world_size=2)
-def encrypt_model_and_data():
+def run():
     # Both parties create the same model architecture
     dummy_model = AliceNet()
     dummy_input = torch.empty((1, 784))
@@ -129,13 +129,9 @@ def encrypt_model_and_data():
     pred = output.argmax(dim=1)
     crypten.print("Decrypted labels:\n", pred)
 
-    # Both parties try to compute accuracy, but only Bob has the labels
-    try:
-        test_labels = torch.load("/tmp/bob_test_labels.pth").long()
-        accuracy = compute_accuracy(output, test_labels[:count])
-        crypten.print("Accuracy: {:.4f}".format(accuracy.item()))
-    except:
-        pass  # Alice doesn't have the labels
+    # Compute the accuracy
+    accuracy = compute_accuracy(output, labels[:count])
+    crypten.print("Accuracy: {:.4f}".format(accuracy.item()))
 
 
-encrypt_model_and_data()
+run()
