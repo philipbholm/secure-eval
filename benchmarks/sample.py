@@ -68,7 +68,7 @@ def compute_accuracy(output, labels):
 # Load pre-trained model to Alice
 dummy_model = AliceNet()
 with safe_globals([AliceNet, Linear]):
-    plaintext_model = torch.load("models/tutorial4_alice_model.pth")
+    plaintext_model = torch.load("models/tutorial4_alice_model.pth", weights_only=False)
 
 print(plaintext_model)
 
