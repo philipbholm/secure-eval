@@ -17,7 +17,9 @@ from torch.nn.modules.linear import Linear
 from torch.serialization import safe_globals
 from torchvision import datasets, transforms
 
-warnings.filterwarnings("ignore", message="You are using `torch.load` with `weights_only=False`")
+warnings.filterwarnings(
+    "ignore", message="You are using `torch.load` with `weights_only=False`"
+)
 warnings.filterwarnings("ignore", message="The given NumPy array is not writable")
 
 crypten.init()
@@ -72,28 +74,6 @@ def compute_accuracy(output, labels):
     return accuracy
 
 
-# Load pre-trained model to Alice
-dummy_model = AliceNet()
-with safe_globals([AliceNet, Linear]):
-    plaintext_model = torch.load("models/tutorial4_alice_model.pth", weights_only=False)
-
-print(plaintext_model)
-
-# Encrypt the model from Alice:
-
-# 1. Create a dummy input with the same shape as the model input
-dummy_input = torch.empty((1, 784))
-
-# 2. Construct a CrypTen network with the trained model and dummy_input
-private_model = crypten.nn.from_pytorch(plaintext_model, dummy_input)
-
-# 3. Encrypt the CrypTen network with src=ALICE
-private_model.encrypt(src=ALICE)
-
-# Check that model is encrypted:
-print("Model successfully encrypted:", private_model.encrypted)
-
-
 # Classify encrypted data with encrypted model
 labels = torch.load("/tmp/bob_test_labels.pth").long()
 count = 100  # For illustration purposes, we'll use only 100 samples for classification
@@ -107,12 +87,12 @@ def run():
 
     # Encrypt model
     with safe_globals([AliceNet, Linear]):
-        model_data = torch.load(
-            "models/tutorial4_alice_model.pth", weights_only=False
-        )
+        model_data = torch.load("models/tutorial4_alice_model.pth", weights_only=False)
         dummy_model.load_state_dict(model_data.state_dict())
     private_model = crypten.nn.from_pytorch(dummy_model, dummy_input)
+    crypten.print(f"Model before encrypion: {private_model}")
     private_model.encrypt(src=ALICE)
+    crypten.print(f"Model after encryption: {private_model}")
 
     # Encrypt data and flatten data
     test_data = torch.load("/tmp/bob_test.pth")
