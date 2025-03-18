@@ -107,14 +107,13 @@ def encrypt_model_and_data():
 
     # Load the model weights on Alice's side only
     # This will be a no-op for Bob
-    try:
-        with safe_globals([AliceNet, Linear]):
-            model_data = torch.load(
-                "models/tutorial4_alice_model.pth", weights_only=False
-            )
-            dummy_model.load_state_dict(model_data.state_dict())
-    except:
-        pass  # Bob will just keep the uninitialized model
+
+    with safe_globals([AliceNet, Linear]):
+        model_data = torch.load(
+            "models/tutorial4_alice_model.pth", weights_only=False
+        )
+        dummy_model.load_state_dict(model_data.state_dict())
+
 
     # Convert to CrypTen model
     private_model = crypten.nn.from_pytorch(dummy_model, dummy_input)
