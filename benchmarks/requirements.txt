@@ -6,8 +6,8 @@ crypten==0.4.1
 tenseal==0.3.16
 
 # ML packages
-onnx==0.17.0
-onnxruntime==0.18.0
+onnx==1.17.0
+onnxruntime==1.18.0
 scikit-learn==1.4.0
 scipy==1.15.2
 tensorflow==2.18.0
