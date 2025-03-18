@@ -2,3 +2,4 @@
 .venv
 .artifacts
 benchmarks/data
+__pycache__
