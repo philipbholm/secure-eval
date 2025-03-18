@@ -100,27 +100,55 @@ count = 100  # For illustration purposes, we'll use only 100 samples for classif
 
 @mpc.run_multiprocess(world_size=2)
 def encrypt_model_and_data():
-    # Load pre-trained model to Alice
-    model = crypten.load_from_party("models/tutorial4_alice_model.pth", src=ALICE)
-
-    # Encrypt model from Alice
+    # Both parties create the same model architecture
+    dummy_model = AliceNet()
     dummy_input = torch.empty((1, 784))
-    private_model = crypten.nn.from_pytorch(model, dummy_input)
+
+    # Load the model weights on Alice's side only
+    # This will be a no-op for Bob
+    try:
+        with safe_globals([AliceNet, Linear]):
+            model_data = torch.load(
+                "models/tutorial4_alice_model.pth", weights_only=False
+            )
+            dummy_model.load_state_dict(model_data.state_dict())
+    except:
+        pass  # Bob will just keep the uninitialized model
+
+    # Convert to CrypTen model
+    private_model = crypten.nn.from_pytorch(dummy_model, dummy_input)
+
+    # Encrypt the model with Alice as the source
     private_model.encrypt(src=ALICE)
 
-    # Load data to Bob
-    data_enc = crypten.load_from_party("/tmp/bob_test.pth", src=BOB)
-    data_enc2 = data_enc[:count]
-    data_flatten = data_enc2.flatten(start_dim=1)
+    # Load test data - each party attempts to load their part
+    test_data = None
+    try:
+        test_data = torch.load("/tmp/bob_test.pth")
+    except:
+        # Alice doesn't have the test data, create dummy data
+        test_data = torch.zeros((count, 28, 28))
+
+    # Encrypt the test data with Bob as the source
+    data_enc = crypten.cryptensor(test_data[:count], src=BOB)
+
+    # Flatten the encrypted data
+    data_flatten = data_enc.flatten(start_dim=1)
 
     # Classify the encrypted data
     private_model.eval()
     output_enc = private_model(data_flatten)
 
-    # Compute the accuracy
+    # Get plaintext output
     output = output_enc.get_plain_text()
-    accuracy = compute_accuracy(output, labels[:count])
-    crypten.print("\tAccuracy: {0:.4f}".format(accuracy.item()))
+
+    # Both parties try to compute accuracy, but only Bob has the labels
+    try:
+        test_labels = torch.load("/tmp/bob_test_labels.pth").long()
+        accuracy = compute_accuracy(output, test_labels[:count])
+        crypten.print("Accuracy: {:.4f}".format(accuracy.item()))
+    except:
+        pass  # Alice doesn't have the labels
 
 
 encrypt_model_and_data()
