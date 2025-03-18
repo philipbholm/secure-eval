@@ -12,6 +12,6 @@ scikit-learn==1.4.0
 scipy==1.15.2
 tensorflow==2.18.0
 tf2onnx==1.8.4
-torch==2.3.1
-torchvision==0.18.1
+torch==2.3.1+cpu
+torchvision==0.18.1+cpu
 wfdb==4.1.2
