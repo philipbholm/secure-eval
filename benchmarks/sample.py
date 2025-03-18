@@ -142,6 +142,7 @@ def encrypt_model_and_data():
 
     # Get plaintext output
     output = output_enc.get_plain_text()
+    print(output)
 
     # Both parties try to compute accuracy, but only Bob has the labels
     try:
