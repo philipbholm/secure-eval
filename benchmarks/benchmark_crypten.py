@@ -2,6 +2,7 @@ import crypten
 import crypten.mpc as mpc
 import torch
 import torch.nn as nn
+from torch.nn.modules.linear import Linear
 from torch.serialization import safe_globals
 
 crypten.init()
@@ -30,8 +31,8 @@ class MLP(nn.Module):
 
 @mpc.run_multiprocess(world_size=2)
 def run():
-    # Add MLP to safe globals to allow loading the model
-    with safe_globals([MLP]):
+    # Add MLP and Linear to safe globals to allow loading the model
+    with safe_globals([MLP, Linear]):
         model = crypten.load_from_party("models/mlp.pt", src=SERVER)
 
     dummy_input = torch.empty((1, 12000))
