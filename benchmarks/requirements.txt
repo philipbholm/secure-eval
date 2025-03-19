@@ -11,7 +11,8 @@ onnxruntime==1.18.0
 scikit-learn==1.4.0
 scipy==1.15.2
 tensorflow==2.18.0
-tf2onnx==1.8.4
-torch==2.3.1+cpu
-torchvision==0.18.1+cpu
+torch==2.3.1; platform_system != "Linux"
+torch==2.3.1+cpu; platform_system == "Linux"
+torchvision==0.18.1; platform_system != "Linux"
+torchvision==0.18.1+cpu; platform_system == "Linux"
 wfdb==4.1.2
