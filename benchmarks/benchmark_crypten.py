@@ -1,4 +1,5 @@
 import warnings
+import multiprocessing
 
 import crypten
 import crypten.mpc as mpc
@@ -6,12 +7,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.linear import Linear
-from torch.serialization import safe_globals
 
 warnings.filterwarnings(
     "ignore", message="You are using `torch.load` with `weights_only=False`"
 )
 warnings.filterwarnings("ignore", message="The given NumPy array is not writable")
+multiprocessing.set_start_method("fork")
 
 crypten.init()
 # Disables OpenMP threads -- needed by @mpc.run_multiprocess which uses fork
@@ -49,9 +50,8 @@ def run():
     dummy_input = torch.empty((1, 12000))
     
     # Encrypt model
-    with safe_globals([MLP, Linear]):
-        model_data = torch.load("models/mlp_local.pt", weights_only=False)
-        dummy_model.load_state_dict(model_data.state_dict())
+    model_data = torch.load("models/mlp_local.pt", weights_only=False)
+    dummy_model.load_state_dict(model_data.state_dict())
     private_model = crypten.nn.from_pytorch(dummy_model, dummy_input)
     private_model.encrypt(src=SERVER)
     crypten.print(f"Model: {private_model}")
