@@ -1,0 +1,10 @@
+{
+    "model_name": "mlp.onnx",
+    "target": "SCI",
+    "input_tensors": {
+        "input": "1,12000"
+    },
+    "output_tensors": [
+        "output"
+    ]
+}
