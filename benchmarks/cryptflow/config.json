@@ -1,9 +1,9 @@
 {
-    "model_name": "mlp_test.onnx",
+    "model_name": "model.onnx",
     "target": "SCI",
     "scale": 12,
     "input_tensors": {
-        "input": "1,10"
+        "input": "1,12000"
     },
     "output_tensors": [
         "output"
