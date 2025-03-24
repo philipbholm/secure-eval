@@ -3,7 +3,7 @@
     "target": "SCI",
     "scale": 12,
     "input_tensors": {
-        "input": "1,12000"
+        "input": "1,10"
     },
     "output_tensors": [
         "output"
