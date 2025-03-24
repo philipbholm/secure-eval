@@ -1,5 +1,5 @@
 {
-    "model_name": "mlp.onnx",
+    "model_name": "mlp_test.onnx",
     "target": "SCI",
     "scale": 12,
     "input_tensors": {
