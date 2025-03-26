@@ -3,3 +3,8 @@
 .artifacts
 benchmarks/data
 __pycache__
+
+# Infrastructure
+.terraform.lock.hcl
+.terraform/
+terraform.tfstate*
